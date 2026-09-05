@@ -1,0 +1,230 @@
+{
+  "name": "Notes and Q/A",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Notes and Q/A generator",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Topic",
+              "placeholder": "Please provide topic",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        0,
+        0
+      ],
+      "id": "b1f7d0f6-8251-40ec-bd73-ec44fb67dfde",
+      "name": "Topic Form",
+      "webhookId": "b6c763a0-522f-4468-9ec2-63c9abd18687"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        192,
+        -192
+      ],
+      "id": "9acff2de-6ea8-455c-9b31-c2bc49cde8ff",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "DjWR9bLu9YPH6BrC",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-mini-2025-04-14",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-mini-2025-04-14"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        224,
+        416
+      ],
+      "id": "d0ab0ec0-e312-48cf-a99a-8cd2ffdf3532",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "DjWR9bLu9YPH6BrC",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=generate 500 words on the topic {{ $json.Topic }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "you are a helpful notes generation assistant"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        208,
+        0
+      ],
+      "id": "c603061c-ee50-4738-a0c3-e6f104104739",
+      "name": "Notes generator"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=generate 5 mcq based QA on the topic {{ $json.Topic }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "You are a helpful Q/A assistant"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        224,
+        240
+      ],
+      "id": "7d716663-5150-4b87-b017-3aabf8d56d75",
+      "name": "QA generator"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        624,
+        80
+      ],
+      "id": "d8e9d290-7122-4e9a-81ee-2e5b74e61d94",
+      "name": "Merge"
+    }
+  ],
+  "pinData": {
+    "Topic Form": [
+      {
+        "json": {
+          "Topic": "data Science",
+          "submittedAt": "2026-09-04T10:07:31.532-04:00",
+          "formMode": "test"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Topic Form": {
+      "main": [
+        [
+          {
+            "node": "Notes generator",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "QA generator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Notes generator",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "QA generator",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notes generator": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "QA generator": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "0a95fd04-c62e-40fe-a637-bc0c8e793d3c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "238cba21a5108e9b79ec4400ddba6aefce30bea9e313ecf98db37bae21bc5c4b"
+  },
+  "id": "wrc7aA5RvciPNQlQ",
+  "tags": []
+}
